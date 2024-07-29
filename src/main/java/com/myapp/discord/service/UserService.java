@@ -18,10 +18,6 @@ public class UserService {
         return userRepository.findByNickname(nickname);
     }
 
-    public DiscordUser saveUser(DiscordUser user) {
-        return userRepository.save(user);
-    }
-
     public DiscordUser getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
