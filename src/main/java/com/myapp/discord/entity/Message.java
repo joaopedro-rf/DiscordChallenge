@@ -14,30 +14,9 @@ public class Message {
     @Id
     private Long id;
 
-    @Override
-    public String toString() {
-        return "Message{" +
-                "content='" + content + '\'' +
-                ", timestamp=" + timestamp +
-                ", messageType=" + messageType +
-                ", id=" + id +
-                ", channel=" + channel +
-                ", discordUser=" + discordUser +
-                '}';
+    public Message(String userDisconnected, Date date, MessageType messageType, Long messageId, Channel channel, DiscordUser author) {
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Message message = (Message) o;
-        return Objects.equals(content, message.content) && Objects.equals(timestamp, message.timestamp) && messageType == message.messageType && Objects.equals(id, message.id) && Objects.equals(channel, message.channel) && Objects.equals(discordUser, message.discordUser);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(content, timestamp, messageType, id, channel, discordUser);
-    }
 
     public Channel getChannel() {
         return channel;
@@ -93,14 +72,52 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "discord_user_id", referencedColumnName = "id")
     private DiscordUser discordUser;
+    @ManyToOne
+    @JoinColumn(name = "oauth2_user_id", referencedColumnName = "id")
+    private OAuth2User oauth2User;
 
-    public Message(String content, Date timestamp, MessageType messageType, Long id, Channel channel, DiscordUser discordUser) {
+    public OAuth2User getOauth2User() {
+        return oauth2User;
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "content='" + content + '\'' +
+                ", timestamp=" + timestamp +
+                ", messageType=" + messageType +
+                ", id=" + id +
+                ", channel=" + channel +
+                ", discordUser=" + discordUser +
+                ", oauth2User=" + oauth2User +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Message message = (Message) o;
+        return Objects.equals(content, message.content) && Objects.equals(timestamp, message.timestamp) && messageType == message.messageType && Objects.equals(id, message.id) && Objects.equals(channel, message.channel) && Objects.equals(discordUser, message.discordUser) && Objects.equals(oauth2User, message.oauth2User);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(content, timestamp, messageType, id, channel, discordUser, oauth2User);
+    }
+
+    public void setOauth2User(OAuth2User oauth2User) {
+        this.oauth2User = oauth2User;
+    }
+
+    public Message(String content, Date timestamp, MessageType messageType, Long id, Channel channel, DiscordUser discordUser, OAuth2User oauth2User) {
         this.content = content;
         this.timestamp = timestamp;
         this.messageType = messageType;
         this.id = id;
         this.channel = channel;
         this.discordUser = discordUser;
+        this.oauth2User = oauth2User;
     }
 
     public Message() {

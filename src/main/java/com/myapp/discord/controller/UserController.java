@@ -11,21 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/user")
 public class UserController {
     @Autowired
     private UserService userService;
-
-    @PostMapping("/register")
-    public ResponseEntity<DiscordUser> register(@RequestBody DiscordUser user) {
-        userService.saveUser(user);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
-    }
-
-//    @PostMapping("/login")
-//    public ResponseEntity<User> login(@RequestBody User user) {
-//
-//    }
 
 
 }
