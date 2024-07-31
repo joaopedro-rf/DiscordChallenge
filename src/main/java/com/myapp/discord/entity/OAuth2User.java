@@ -5,8 +5,7 @@ import com.nimbusds.oauth2.sdk.id.Subject;
 import jakarta.persistence.*;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity(name = "oauth2_user")
 @Table(name = "oauth2_user")
@@ -20,6 +19,10 @@ public class OAuth2User {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override
@@ -48,8 +51,23 @@ public class OAuth2User {
         return Objects.hash(id, sub, email, name, picURL, messages, guilds);
     }
 
-    public void setId(Long id) {
+    public Set<Guild> getGuilds() {
+        if(guilds == null) guilds = new HashSet<>();
+        return guilds;
+    }
+
+    public void setGuilds(Set<Guild> guilds) {
+        this.guilds = guilds;
+    }
+
+    public OAuth2User(Long id, String sub, String email, String name, String picURL, List<Message> messages, Set<Guild> guilds) {
         this.id = id;
+        this.sub = sub;
+        this.email = email;
+        this.name = name;
+        this.picURL = picURL;
+        this.messages = messages;
+        this.guilds = guilds;
     }
 
     public String getSub() {
@@ -85,29 +103,12 @@ public class OAuth2User {
     }
 
     public List<Message> getMessages() {
+        if(messages == null) messages = new ArrayList<>();
         return messages;
     }
 
     public void setMessages(List<Message> messages) {
         this.messages = messages;
-    }
-
-    public List<Guild> getGuilds() {
-        return guilds;
-    }
-
-    public void setGuilds(List<Guild> guilds) {
-        this.guilds = guilds;
-    }
-
-    public OAuth2User(Long id, List<Guild> guilds, List<Message> messages, String picURL, String name, String email, String sub) {
-        this.id = id;
-        this.guilds = guilds;
-        this.messages = messages;
-        this.picURL = picURL;
-        this.name = name;
-        this.email = email;
-        this.sub = sub;
     }
 
     private String sub;
@@ -126,9 +127,17 @@ public class OAuth2User {
     @JsonIgnore
     private List<Message> messages;
 
-    @OneToMany(mappedBy = "oauth2User", cascade = CascadeType.ALL)
+    @ManyToMany
+    @JoinTable(
+            name = "oauth2_user_server",
+            joinColumns = @JoinColumn(name = "oauth2_user_id"),
+            inverseJoinColumns = @JoinColumn(name = "guild_id")
+    )
     @JsonIgnore
-    private List<Guild> guilds;
+    private Set<Guild> guilds = new HashSet<>();
 
-
+    public void addGuild(Guild guild) {
+        this.guilds.add(guild);
+        guild.getOauth2User().add(this);
+    }
 }

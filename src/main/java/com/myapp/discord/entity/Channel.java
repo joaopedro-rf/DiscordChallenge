@@ -3,6 +3,7 @@ package com.myapp.discord.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +14,6 @@ public class Channel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String description;
     private Date createdAt;
 
     @ManyToOne
@@ -27,8 +27,12 @@ public class Channel {
     public Channel() {
     }
 
-    public List<DiscordUser> getSubscribers() {
-        return subscribers;
+
+    public Channel(List<Message> messages, Guild guild, Date createdAt, String name) {
+        this.messages = messages;
+        this.guild = guild;
+        this.createdAt = createdAt;
+        this.name = name;
     }
 
     @Override
@@ -36,11 +40,9 @@ public class Channel {
         return "Channel{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
                 ", createdAt=" + createdAt +
                 ", guild=" + guild +
                 ", messages=" + messages +
-                ", subscribers=" + subscribers +
                 '}';
     }
 
@@ -49,19 +51,17 @@ public class Channel {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Channel channel = (Channel) o;
-        return Objects.equals(id, channel.id) && Objects.equals(name, channel.name) && Objects.equals(description, channel.description) && Objects.equals(createdAt, channel.createdAt) && Objects.equals(guild, channel.guild) && Objects.equals(messages, channel.messages) && Objects.equals(subscribers, channel.subscribers);
+        return Objects.equals(id, channel.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, createdAt, guild, messages, subscribers);
-    }
-
-    public void setSubscribers(List<DiscordUser> subscribers) {
-        this.subscribers = subscribers;
+        return Objects.hash(id);
     }
 
     public List<Message> getMessages() {
+        if(messages == null) messages = new ArrayList<>();
+
         return messages;
     }
 
@@ -77,6 +77,14 @@ public class Channel {
         this.guild = guild;
     }
 
+    public Channel(Long id, Guild guild, List<Message> messages, Date createdAt, String name) {
+        this.id = id;
+        this.guild = guild;
+        this.messages = messages;
+        this.createdAt = createdAt;
+        this.name = name;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -85,13 +93,6 @@ public class Channel {
         this.createdAt = createdAt;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public String getName() {
         return name;
@@ -109,21 +110,6 @@ public class Channel {
         this.id = id;
     }
 
-    @ManyToMany
-    @JoinTable(
-            name = "channel_subscribers",
-            joinColumns = @JoinColumn(name = "channel_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<DiscordUser> subscribers;
 
-    public Channel(Long id, String name, String description, Date createdAt, Guild guild, List<Message> messages, List<DiscordUser> subscribers) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.createdAt = createdAt;
-        this.guild = guild;
-        this.messages = messages;
-        this.subscribers = subscribers;
-    }
+
 }

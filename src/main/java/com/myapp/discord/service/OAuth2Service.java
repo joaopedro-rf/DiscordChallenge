@@ -16,6 +16,10 @@ public class OAuth2Service {
         this.oAuth2Repository = oAuth2Repository;
     }
 
+    public OAuth2User findByIdOrThrowException(Long id){
+        return oAuth2Repository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
     public void saveUser(UserInfoDTO userInfo){
         if(oAuth2Repository.findFirstByEmail(userInfo.email()).isPresent()){
             return;
